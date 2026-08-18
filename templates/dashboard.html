@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Subsidy Transparency Dashboard</title>
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --surface: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --border-strong: #d1d5db;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 18px 20px 48px;
+            display: grid;
+            grid-template-columns: 240px minmax(0, 1fr);
+            gap: 12px;
+        }
+
+        .sidebar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            height: fit-content;
+            position: sticky;
+            top: 16px;
+        }
+
+        .nav-title {
+            margin: 0 0 10px;
+            font-size: 14px;
+            color: var(--muted);
+            letter-spacing: 0.2px;
+        }
+
+        .nav a {
+            display: block;
+            padding: 10px 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text);
+            border: 1px solid transparent;
+        }
+
+        .nav a.active {
+            background: #fafafa;
+            border-color: var(--border);
+            font-weight: 700;
+        }
+
+        .nav a:hover {
+            background: #fafafa;
+            border-color: var(--border);
+        }
+
+        header {
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.2;
+            letter-spacing: 0.2px;
+        }
+
+        .subtitle {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin: 18px 0 22px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .card .label {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+
+        .card .value {
+            margin: 8px 0 0;
+            font-size: 22px;
+            line-height: 1.15;
+            font-weight: 700;
+        }
+
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px 16px;
+        }
+
+        .section + .section {
+            margin-top: 12px;
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 520px;
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border);
+            padding: 10px 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #fafafa;
+            border-bottom: 1px solid var(--border-strong);
+            font-size: 12px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        tbody tr:nth-child(even) td {
+            background: #fcfcfd;
+        }
+
+        td.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .empty {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 8px 0 0;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border: 1px solid var(--border-strong);
+            border-radius: 999px;
+            font-size: 12px;
+            color: var(--text);
+            background: #fafafa;
+        }
+
+        .pill .k {
+            color: var(--muted);
+        }
+
+        .grid-img {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .img-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 10px;
+        }
+
+        .img-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 820px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+            }
+            .grid-img {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <aside class="sidebar" aria-label="Navigation">
+        <p class="nav-title">Navigation</p>
+        <nav class="nav">
+            <a class="active" href="/">Dashboard</a>
+            <a href="/slds">SLDS Analysis</a>
+        </nav>
+    </aside>
+
+    <div>
+        <header>
+            <h1>Government Subsidy Transparency Dashboard</h1>
+            <p class="subtitle">Summary of district-level risk scoring for targeted audits</p>
+        </header>
+
+        <section class="stats" aria-label="Key metrics">
+        <div class="card">
+            <p class="label">Total districts analyzed</p>
+            <p class="value">{{ total }}</p>
+        </div>
+        <div class="card">
+            <p class="label">High-risk districts</p>
+            <p class="value">{{ high_risk }}</p>
+        </div>
+        <div class="card">
+            <p class="label">Audit workload reduction</p>
+            <p class="value">{{ reduction }}%</p>
+        </div>
+        </section>
+
+        <main class="section">
+        <h2>High-Risk Districts</h2>
+        <div class="table-wrap" role="region" aria-label="High-risk districts table" tabindex="0">
+            <table>
+                <thead>
+                    <tr>
+                        <th>District</th>
+                        <th style="text-align:right;">Risk Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table %}
+                    <tr>
+                        <td>{{ row['district_name'] }}</td>
+                        <td class="num">{{ row['risk_score'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if not table %}
+        <p class="empty">No high-risk districts found for the current selection.</p>
+        {% endif %}
+        </main>
+
+        <section class="section" aria-label="Dashboard graphs">
+            <h2>Graphs</h2>
+            <p class="subtitle">District-level visuals generated from the main analysis</p>
+
+            <div class="grid-img" aria-label="Dashboard graphs grid">
+                {% for g in dashboard_graphs or [] %}
+                    <div class="img-card">
+                        <img src="{{ url_for('static', filename=g.get('file')) }}?v={{ g.get('v') }}" alt="{{ g.get('title','Graph') }}">
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if not dashboard_graphs %}
+                <p class="empty">No graphs generated.</p>
+            {% endif %}
+        </section>
+
+        <section class="section" aria-label="Income and asset cross verification">
+        <h2>Income &amp; Asset Cross-Verification</h2>
+        <p class="subtitle">Links beneficiary records to registries: Income Tax, Land, Vehicle, GST</p>
+
+        {% if cross_verification and cross_verification.get('error') %}
+            <p class="empty">{{ cross_verification.get('error') }}</p>
+        {% elif not cross_verification %}
+            <p class="empty">No beneficiary-level dataset found for cross-verification. Expected: RealWorldData/synthetic_subsidy_data.xlsx</p>
+        {% else %}
+            <p class="subtitle">Beneficiary dataset: {{ cross_verification.get('dataset_path') }} (mode: {{ cross_verification.get('mode') }})</p>
+
+            <div class="pill-row" aria-label="Data source connection status">
+                <span class="pill"><span class="k">Income Tax API key:</span> {{ 'SET' if cross_verification.get('api_status', {}).get('income_tax') else 'NOT SET' }}</span>
+                <span class="pill"><span class="k">Land Records API key:</span> {{ 'SET' if cross_verification.get('api_status', {}).get('land_records') else 'NOT SET' }}</span>
+                <span class="pill"><span class="k">Vehicle API key:</span> {{ 'SET' if cross_verification.get('api_status', {}).get('vehicle_registration') else 'NOT SET' }}</span>
+                <span class="pill"><span class="k">GST API key:</span> {{ 'SET' if cross_verification.get('api_status', {}).get('gst') else 'NOT SET' }}</span>
+            </div>
+
+            <section class="stats" aria-label="Cross verification key metrics" style="margin-top: 12px;">
+                <div class="card">
+                    <p class="label">Beneficiaries analyzed</p>
+                    <p class="value">{{ cross_verification.get('summary', {}).get('total_beneficiaries', 0) }}</p>
+                </div>
+                <div class="card">
+                    <p class="label">Flagged for verification</p>
+                    <p class="value">{{ cross_verification.get('summary', {}).get('flagged_for_verification', 0) }}</p>
+                </div>
+                <div class="card">
+                    <p class="label">Income-tax mismatches</p>
+                    <p class="value">{{ cross_verification.get('summary', {}).get('income_tax_mismatches', 0) }}</p>
+                </div>
+            </section>
+
+            <div class="table-wrap" role="region" aria-label="Cross verification breakdown" tabindex="0" style="margin-top: 10px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Income Tax (High ITR)</th>
+                            <th>Land Records Hits</th>
+                            <th>Vehicle Hits (>=2)</th>
+                            <th>GST Registered</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="num">{{ cross_verification.get('summary', {}).get('high_income_itr', 0) }}</td>
+                            <td class="num">{{ cross_verification.get('summary', {}).get('land_records_hits', 0) }}</td>
+                            <td class="num">{{ cross_verification.get('summary', {}).get('vehicle_hits', 0) }}</td>
+                            <td class="num">{{ cross_verification.get('summary', {}).get('gst_hits', 0) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 style="margin-top: 14px;">Top flagged cases</h2>
+            <div class="table-wrap" role="region" aria-label="Top flagged beneficiaries" tabindex="0">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Beneficiary</th>
+                            <th>District</th>
+                            <th>Scheme</th>
+                            <th style="text-align:right;">Declared Income</th>
+                            <th style="text-align:right;">ITR Income</th>
+                            <th style="text-align:right;">Land</th>
+                            <th style="text-align:right;">Vehicles</th>
+                            <th style="text-align:right;">GST</th>
+                            <th style="text-align:right;">Risk</th>
+                            <th style="text-align:right;">Flag</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in cross_verification.get('top_cases', []) %}
+                        <tr>
+                            <td>{{ row.get('beneficiary_id','') }}</td>
+                            <td>{{ row.get('district','') }}</td>
+                            <td>{{ row.get('scheme_type','') }}</td>
+                            <td class="num">{{ row.get('income','') }}</td>
+                            <td class="num">{{ row.get('itr_income','') }}</td>
+                            <td class="num">{{ 'YES' if row.get('land_owned') else 'NO' }}</td>
+                            <td class="num">{{ row.get('vehicle_count','') }}</td>
+                            <td class="num">{{ 'YES' if row.get('gst_registered') else 'NO' }}</td>
+                            <td class="num">{{ row.get('cross_verification_risk_score','') }}</td>
+                            <td class="num">{{ 'YES' if row.get('needs_cross_verification') else 'NO' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if not cross_verification.get('top_cases') %}
+                <p class="empty">No cases available.</p>
+            {% endif %}
+        {% endif %}
+        </section>
+
+        <section class="section" aria-label="Dataset preview">
+        <h2>Dataset Preview</h2>
+        <p class="subtitle">Showing {{ csv_preview_count }} rows from {{ csv_filename }}</p>
+        <div class="table-wrap" role="region" aria-label="CSV dataset preview table" tabindex="0">
+            <table>
+                <thead>
+                    <tr>
+                        {% for col in csv_columns %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in csv_rows %}
+                    <tr>
+                        {% for col in csv_columns %}
+                        <td>{{ row.get(col, '') }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if not csv_rows %}
+        <p class="empty">CSV preview is empty.</p>
+        {% endif %}
+        </section>
+    </div>
+</div>
+
+</body>
+</html>

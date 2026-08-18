@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLDS Analysis</title>
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --surface: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --border-strong: #d1d5db;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+        .layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 18px 20px 48px;
+            display: grid;
+            grid-template-columns: 240px minmax(0, 1fr);
+            gap: 12px;
+        }
+        .sidebar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            height: fit-content;
+            position: sticky;
+            top: 16px;
+        }
+        .nav-title {
+            margin: 0 0 10px;
+            font-size: 14px;
+            color: var(--muted);
+            letter-spacing: 0.2px;
+        }
+        .nav a {
+            display: block;
+            padding: 10px 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text);
+            border: 1px solid transparent;
+        }
+        .nav a.active {
+            background: #fafafa;
+            border-color: var(--border);
+            font-weight: 700;
+        }
+        .nav a:hover {
+            background: #fafafa;
+            border-color: var(--border);
+        }
+        header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 22px;
+            line-height: 1.2;
+        }
+        .subtitle {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px 16px;
+            margin-top: 12px;
+        }
+        h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin: 12px 0 0;
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .card .label {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+        .card .value {
+            margin: 8px 0 0;
+            font-size: 20px;
+            line-height: 1.15;
+            font-weight: 700;
+        }
+        .grid-img {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .img-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 10px;
+        }
+        .img-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .empty {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .grid-img { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar" aria-label="Navigation">
+        <p class="nav-title">Navigation</p>
+        <nav class="nav">
+            <a href="/">Dashboard</a>
+            <a class="active" href="/slds">SLDS Analysis</a>
+        </nav>
+    </aside>
+
+    <div>
+        <header>
+            <h1>SLDS (Subsidy Leakage Detection System)</h1>
+            <p class="subtitle">Offline fallback mode is active until the backend and data pipeline are available again.</p>
+        </header>
+
+        <section class="section">
+            <h2>Summary</h2>
+            <p class="subtitle">Dataset: {{ slds.get('dataset_path') }}</p>
+            <section class="stats" aria-label="SLDS metrics">
+                <div class="card">
+                    <p class="label">Total Distributed</p>
+                    <p class="value">₹{{ slds.get('total_distributed') }}</p>
+                </div>
+                <div class="card">
+                    <p class="label">Amount At Risk</p>
+                    <p class="value">₹{{ slds.get('amount_at_risk') }}</p>
+                </div>
+                <div class="card">
+                    <p class="label">Estimated Leakage</p>
+                    <p class="value">{{ slds.get('estimated_leakage_percent') }}%</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="section">
+            <h2>System Status</h2>
+            <p class="empty">{{ slds.get('classification_report') }}</p>
+        </section>
+
+        <section class="section">
+            <h2>Graphs</h2>
+            <div class="grid-img" aria-label="SLDS graphs">
+                {% for img in slds.get('images', []) %}
+                    <div class="img-card">
+                        <img src="{{ url_for('static', filename=img.get('file')) }}?v={{ img.get('v') }}" alt="{{ img.get('title','SLDS graph') }}">
+                    </div>
+                {% endfor %}
+            </div>
+            {% if not slds.get('images') %}
+                <p class="empty">No graphs generated.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+</body>
+</html>
