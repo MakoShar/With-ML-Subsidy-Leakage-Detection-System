@@ -12,6 +12,9 @@ A Flask-based dashboard for detecting possible subsidy leakage and risk patterns
 - PNG chart generation using Matplotlib
 - Render-ready Python deployment configuration
 
+<img width="1595" height="860" alt="image" src="https://github.com/user-attachments/assets/c43f3e37-2340-479e-8250-8445d89ac6f4" />
+
+
 ## Project Structure
 
 ```text
@@ -83,33 +86,13 @@ http://localhost:5000
 - `/` → District dashboard
 - `/slds` → Subsidy leakage detection prototype dashboard
 
-## Render Deployment
+## Screen-Shorts
 
-This project is configured for Render using the included `render.yaml` file and `gunicorn` as the production server.
+<img width="1193" height="861" alt="image" src="https://github.com/user-attachments/assets/0fdcd25d-3ce3-4bfd-8be9-98f40bcf0d10" />
 
-### Deploy on Render
+<img width="1251" height="517" alt="image" src="https://github.com/user-attachments/assets/d56ff895-4d9e-4f69-82bc-d99247ed61de" />
 
-1. Push the project to GitHub
-2. Go to Render dashboard
-3. Click `New` → `Web Service`
-4. Connect your GitHub repository
-5. Use the following settings:
-
-```bash
-Build Command:
-pip install -r requirements.txt
-
-Start Command:
-gunicorn app:app
-```
-
-Render will automatically start the Flask app using the WSGI entry point.
-
-## Notes
-
-- The app is designed to run in a demo/offline-friendly mode when data or API integrations are not available.
-- The project includes fallback templates and static visualization assets so the UI still renders gracefully.
-- The live deployment should use the environment variables provided by Render and the app will respect the `PORT` variable automatically.
+<img width="1570" height="792" alt="image" src="https://github.com/user-attachments/assets/6ffef20c-0155-48e7-ad3d-13640d00fcf8" />
 
 ## License
 
